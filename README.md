@@ -8,7 +8,7 @@ Por el momento como ejemplo se está tomando Javascript
 
 La idea es hacer un Lexer configurable para cualquier lenguaje
 
-Modo de uso: python pyscanner.py <ruta/al/archivo>
+Modo de uso: python pyscanner.py ruta/al/archivo
 
 TODO:
 =====
