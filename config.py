@@ -1,4 +1,4 @@
 # Configuraciones del scanner
 
-TOKENIZAR_COMENTARIOS 	= True
-DEBUG 					= True
+DEBUG 				= True
+TOKENIZE_COMMENTS	= False

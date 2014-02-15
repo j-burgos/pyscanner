@@ -2,49 +2,60 @@
 # -*- coding: UTF-8 -*-
 
 import sys
+import config
 import lang
 import re
 
-print "Scanner de Javascript v0.1 \n"
+print "PyScanner v0.2 \n"
 
 if len(sys.argv) < 2:
-	print "Modo de uso: python pyscanner.py <ruta_archivo>"
+	print "Usage: python pyscanner.py <filepath> \n"
 	exit()
-else:
-	pass
 
-tokens_validos = []
+print "Running analysis for language: {} \n".format(lang.lang_name)
 
-definiciones = [obj for obj in (lang.lexico.get(definicion) for definicion in lang.lexico)]
-for definicion in definiciones:
-	if type(definicion) is list:
-		tokens = [token for token in definicion]
+lexic = lang.lexic
+filepath = sys.argv[1]
+
+valid_tokens = []
+
+rules = [rule for rule in (lexic.get(definition) for definition in lexic)]
+for rule in rules:
+	if type(rule) is list:
+		tokens = [token for token in rule]
 		for token in tokens:
-			tokens_validos.append(token)
+			valid_tokens.append(token)
 	else:
-		tokens_validos.append(definicion)
+		valid_tokens.append(rule)
 
-validos_regexp = re.compile("|".join([token.regexpstr for token in tokens_validos])) 
+valid_regexps = [token.regexpstr for token in valid_tokens]
+valid_regexp = "|".join(valid_regexps)
+invalid_regexp = "(?! " + valid_regexp + ")"
+all_regexp = re.compile( "[\n|\r|\r\n|\s]|" + "|".join([valid_regexp, invalid_regexp]))
 		
 try:
-	with open(sys.argv[1],'r') as archivo:
-		texto = archivo.readlines()
-		codigo = "".join(texto)
-		for blanco in lang.blancos:
-			codigo = codigo.strip().replace(blanco,"")
+	with open(filepath,'r') as filestream:
+		text = filestream.readlines()
+		code = "".join(text)
 
-		#print [token.regexpstr for token in tokens_validos]
-		for match in validos_regexp.finditer(codigo):
-			lexema = match.group(0)
-			#print match.group()
-			for definicion in tokens_validos:
-				if definicion.regexp.match(lexema):
-					print lexema + " -> " + definicion.token
-					break
+		for match in all_regexp.finditer(code):
+			lexem = match.group(0)
+			
+			if lexem == "" and match.start() != len(code):
+				print "Null token: {}".format(code[match.start()])
+
+			for rule in valid_tokens:
+				if rule.regexp.match(lexem):
+					if config.TOKENIZE_COMMENTS == False and rule.token == "COMMENTTOKEN":
+						break	
+					else:
+						print "{} -> {}".format(lexem.replace("\n",""),rule.token)
+						break
 
 except IOError as e:
-	print "ERROR: No se pudo encontrar o abrir el archivo: {}".format(sys.argv[0])
+	print "ERROR: Could not find or open the file: {}".format(sys.argv[0])
 	exit()
+
 except Exception as e:
-	print "ERROR: Ocurrio un problema inesperado: {}".format(repr(e))
+	print "ERROR: Unexpected error: {}".format(repr(e))
 	exit()
