@@ -1,16 +1,16 @@
 PyScanner
 =========
 
-Es un analizador lexicográfico hecho con Python.
+Simple Lexer used to convert a source code file into tokens
+Currently using Javascript as an example language (language definition is in lang.py)
 
-En lang.py se encuentra la definicion del lexico del lenguaje
-Por el momento como ejemplo se está tomando Javascript
+Usage: python pyscanner.py path/to/file
 
-La idea es hacer un Lexer configurable para cualquier lenguaje
-
-Modo de uso: python pyscanner.py ruta/al/archivo
 
 TODO:
 =====
 
-Documentación
+- Encapsulate into a function or class
+- Return (lexem, token) list
+- Load language lexic from a text file
+- Documentation
